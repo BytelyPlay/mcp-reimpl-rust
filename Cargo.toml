@@ -1,0 +1,7 @@
+[workspace]
+resolver = "3"
+members = ["lib", "mcp-reimpl-test-bed"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2024"

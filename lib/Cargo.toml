@@ -1,0 +1,6 @@
+[package]
+name = "mcp-reimpl"
+
+[dependencies]
+serde = "1.0.229"
+tokio = "1.53.1"

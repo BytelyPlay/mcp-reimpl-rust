@@ -1,5 +1,7 @@
 [package]
 name = "mcp-reimpl"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 serde = "1.0.229"

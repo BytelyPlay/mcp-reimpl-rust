@@ -1,34 +1,23 @@
+use std::io::Write;
 use std::net::TcpListener;
+use crate::network::acceptor::Acceptor;
 
 pub struct McpServer {
-    listener: TcpListener
+    acceptor: Acceptor
 }
 
 impl McpServer {
     pub fn listen(port: u16, ip: impl Into<String>) -> Result<Self, std::io::Error> {
-        let result = Self {
-                listener: TcpListener::bind(
-                    format!("{}:{}", ip.into(), port)
-                )?
-            };
-
-        result.begin_accepting();
+        let acceptor = Acceptor::begin_accepting(
+            TcpListener::bind(
+                format!("{}:{}", ip.into(), port)
+            )?
+        );
 
         Ok(
-            result
-        )
-    }
-    fn begin_accepting(&self) {
-        tokio::spawn(
-            async {
-                let mut buf = [0u8; 1024];
-
-                self.listener.accept();
-
-                loop {
-
-                }
+            Self {
+                acceptor
             }
-        );
+        )
     }
 }

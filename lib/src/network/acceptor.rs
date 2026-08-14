@@ -1,30 +1,42 @@
-use std::net::TcpListener;
+use std::net::{SocketAddr, TcpListener, TcpStream};
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use futures::executor::block_on;
+use tokio::sync::RwLock;
+use crate::network::client::Client;
+
+type ThreadSafeClientList = Arc<RwLock<Vec<Client>>>;
 
 pub struct Acceptor {
-    continue_accepting: AtomicBool,
-    listener: TcpListener
+    continue_accepting: Arc<AtomicBool>,
+    client_list: ThreadSafeClientList
 }
 
 impl Acceptor {
-    pub fn new(listener: TcpListener) -> Acceptor {
+    pub fn new() -> Acceptor {
         Self {
-            continue_accepting: AtomicBool::new(true),
-            listener: listener
+            continue_accepting: Arc::new(
+                AtomicBool::new(true)
+            ),
+            client_list: Arc::new(RwLock::new(Vec::new())),
         }
     }
-    pub fn begin_accepting(self) {
+    pub fn begin_accepting(&self, listener: TcpListener) {
+        let accepting = self.continue_accepting.clone();
+        let client_list = self.client_list.clone();
+
         tokio::spawn(async move {
             loop {
-                if !self.continue_accepting.load(Ordering::SeqCst) {
-
+                if !accepting.load(Ordering::SeqCst) {
+                    return;
                 }
-                match self.listener.accept() {
-                    Ok(mut conn) => {
-
+                match listener.accept() {
+                    Ok(conn) => {
+                        Self::accept(conn, client_list.clone());
                     },
                     Err(err) => {
-                        println!("Err: {}", err)
+                        // TODO: Use an ACTUAL logger.
+                        println!("Error while accepting: {}", err)
                     }
                 };
             }
@@ -38,5 +50,10 @@ impl Acceptor {
                 false, Ordering::SeqCst
             )
         }
+    }
+    fn accept(mut conn: (TcpStream, SocketAddr), client_list: ThreadSafeClientList) {
+        let vec = block_on(
+            client_list.write()
+        );
     }
 }

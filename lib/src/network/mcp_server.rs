@@ -1,6 +1,5 @@
-use std::io::Write;
-use std::net::TcpListener;
 use crate::network::acceptor::Acceptor;
+use std::net::TcpListener;
 
 pub struct McpServer {
     acceptor: Acceptor
@@ -8,7 +7,9 @@ pub struct McpServer {
 
 impl McpServer {
     pub fn listen(port: u16, ip: impl Into<String>) -> Result<Self, std::io::Error> {
-        let acceptor = Acceptor::begin_accepting(
+        let acceptor = Acceptor::new();
+
+        acceptor.begin_accepting(
             TcpListener::bind(
                 format!("{}:{}", ip.into(), port)
             )?

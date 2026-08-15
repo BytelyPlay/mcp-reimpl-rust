@@ -1,7 +1,7 @@
-use std::net::{SocketAddr, TcpListener, TcpStream};
-use std::sync::Arc;
+use std::sync::{Arc};
 use std::sync::atomic::{AtomicBool, Ordering};
 use futures::executor::block_on;
+use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::RwLock;
 use crate::network::client::Client;
 
@@ -52,8 +52,9 @@ impl Acceptor {
         }
     }
     fn accept(mut conn: (TcpStream, SocketAddr), client_list: ThreadSafeClientList) {
-        let vec = block_on(
+        let mut vec = block_on(
             client_list.write()
         );
+        (*vec).push(Client {});
     }
 }

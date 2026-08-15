@@ -1,5 +1,6 @@
+use tokio::net::TcpListener;
+use tokio::net::unix::SocketAddr;
 use crate::network::acceptor::Acceptor;
-use std::net::TcpListener;
 
 pub struct McpServer {
     acceptor: Acceptor
@@ -11,7 +12,7 @@ impl McpServer {
 
         acceptor.begin_accepting(
             TcpListener::bind(
-                format!("{}:{}", ip.into(), port)
+                SocketAddr
             )?
         );
 

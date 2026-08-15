@@ -1,6 +1,6 @@
 use tokio::net::TcpListener;
-use tokio::net::unix::SocketAddr;
 use crate::network::acceptor::Acceptor;
+use futures::executor::block_on;
 
 pub struct McpServer {
     acceptor: Acceptor
@@ -11,8 +11,10 @@ impl McpServer {
         let acceptor = Acceptor::new();
 
         acceptor.begin_accepting(
-            TcpListener::bind(
-                SocketAddr
+            block_on(
+                TcpListener::bind(
+                    format!("{}:{}", ip.into(), port)
+                )
             )?
         );
 

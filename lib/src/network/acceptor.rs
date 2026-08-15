@@ -4,6 +4,7 @@ use futures::executor::block_on;
 use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::RwLock;
 use crate::network::client::Client;
+use core::net::SocketAddr;
 
 type ThreadSafeClientList = Arc<RwLock<Vec<Client>>>;
 
@@ -30,7 +31,7 @@ impl Acceptor {
                 if !accepting.load(Ordering::SeqCst) {
                     return;
                 }
-                match listener.accept() {
+                match listener.accept().await {
                     Ok(conn) => {
                         Self::accept(conn, client_list.clone());
                     },
@@ -51,10 +52,10 @@ impl Acceptor {
             )
         }
     }
-    fn accept(mut conn: (TcpStream, SocketAddr), client_list: ThreadSafeClientList) {
+    fn accept(conn: (TcpStream, SocketAddr), client_list: ThreadSafeClientList) {
         let mut vec = block_on(
             client_list.write()
         );
-        (*vec).push(Client {});
+        (*vec).push(Client::new(conn.0, conn.1));
     }
 }

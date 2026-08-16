@@ -6,3 +6,4 @@ publish = false
 
 [dependencies]
 mcp-reimpl = { path = "../lib" }
+tokio = { version="1.53.1", features = ["full"]}

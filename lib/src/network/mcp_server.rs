@@ -24,4 +24,9 @@ impl McpServer {
             }
         )
     }
+    /// This blocks until McpServer is shutdown.
+    /// It doesn't send any signal to shut down.
+    pub async fn await_until_shutdown() {
+        
+    }
 }

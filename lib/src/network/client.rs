@@ -35,6 +35,16 @@ impl Client {
 
         match read_result {
             Ok(result) => {
+                let mut hex_representation_of_bytes = String::new();
+
+                for b in &buf[0..result] {
+                    hex_representation_of_bytes.push_str(
+                        format!("{:02X?}", b).as_str()
+                    )
+                }
+                // TODO: Remove this
+                print!("{}", hex_representation_of_bytes);
+
                 stream.write_all(
                     &buf[0..result]
                 ).await.expect("Implementation for handling this error isn't implements yet.");
